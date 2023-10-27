@@ -2,7 +2,9 @@
 const path = require('path');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
-const nextConfig = {
+module.exports = {
+  output: "export",
+  basePath: "/dtvis",
   webpack: (
     config,
     { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
@@ -23,5 +25,3 @@ const nextConfig = {
     ],
   }),
 };
-
-module.exports = nextConfig;
