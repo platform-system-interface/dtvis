@@ -18,7 +18,7 @@ export default function Home() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(iEdges);
   
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
