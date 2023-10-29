@@ -15,7 +15,7 @@ import { nodes as iNodes, edges as iEdges } from "./nodes-edges.json";
 import { transform, getNodesEdges } from "./lib";
 
 export default function Home() {
-  const [fbuf, setFbuf] = useState(null);
+  const [fbuf, setFbuf] = useState<ArrayBuffer | null>(null);
   const [inProgress, setInProgress] = useState(false);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
