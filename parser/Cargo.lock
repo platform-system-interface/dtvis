@@ -31,6 +31,7 @@ dependencies = [
  "console_error_panic_hook",
  "gloo-utils",
  "js-sys",
+ "psi_device_tree",
  "serde",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -84,6 +85,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "18fb31db3f9bddb2ea821cde30a9f70117e3f119938b5ee630b7403aa6e2ead9"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "psi_device_tree"
+version = "2.0.0"
+source = "git+https://github.com/orangecms/device_tree-rs?tag=v2.0.0#d75180e5d34fdc113f98ddbd420cf4d803efad33"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
