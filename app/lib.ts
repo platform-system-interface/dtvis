@@ -1,6 +1,6 @@
-const fourU8ToU32 = (f) => (f[0] << 24) | (f[1] << 16) | (f[2] << 8) | f[3];
+const fourU8ToU32 = (f: number[]) => (f[0] << 24) | (f[1] << 16) | (f[2] << 8) | f[3];
 
-const u8ArrToU32Arr = (u8a) => {
+const u8ArrToU32Arr = (u8a: number[]) => {
     let res = [];
     for (let i = 0; i < u8a.length/4; i++) {
         const c = u8a.slice(i*4, (i+1)*4);
@@ -9,7 +9,10 @@ const u8ArrToU32Arr = (u8a) => {
     return res;
 };
 
-const u8ArrToStr = (u8a) => u8a.reduce((a,c,i) => {
+type DTNode = any; // TODO
+type DTProp = any; // TODO
+
+const u8ArrToStr = (u8a: number[]) => u8a.reduce((a,c,i) => {
   if (i === u8a.length -1) {
     return a;
   }
@@ -18,27 +21,27 @@ const u8ArrToStr = (u8a) => u8a.reduce((a,c,i) => {
 }, "");
 
 // some props are simple strings
-const getStringProp = (n, pname) => {
-  const p = n.props.find(p => p[0] === pname);
+const getStringProp = (n: DTNode, pname: string) => {
+  const p = n.props.find((p: DTProp) => p[0] === pname);
   if (p) {
     return u8ArrToStr(p[1]);
   }
 };
 
 // many props are just numbers
-const getProp = (n, pname) => {
-  const p = n.props.find(p => p[0] === pname);
+const getProp = (n: DTNode, pname: string) => {
+  const p = n.props.find((p: DTProp) => p[0] === pname);
   return p ? u8ArrToU32Arr(p[1]) : null;
 };
 
 // strings representation of lists of numbers for pretty-printing
-const getPropStr = (n, pname) => {
+const getPropStr = (n: DTNode, pname: string) => {
   const p = getProp(n, pname);
   return p ? p.join(", ") : null;
 };
 
 // transform a node's props into numbers and strings, omitting many
-const transformNode = (n) => {
+const transformNode = (n: DTNode) => {
   const name = n.name || "root";
   // phandle is an identifier to the node
   const phandle = getProp(n, "phandle");
@@ -64,19 +67,22 @@ const transformNode = (n) => {
   };
 };
 
-export const transform = (n, id = "10000") => {
+export const transform = (n: DTNode, id: string = "10000") => {
   return {
     ...transformNode(n),
     id,
-    children: n.children.map((c, i) => transform(c, `${id}_${i}`)),
+    children: n.children.map((c: DTNode, i: number) => transform(c, `${id}_${i}`)),
   }
 };
 
+type TransformedNode = any; // TODO
+type TransformedEdge = any; // TODO
+
 // flatten tree to list of nodes, use IDs to define ReactFlow edges
-export const getNodesEdges = (tree) => {
-  const nodes = [];
-  const edges = [];
-  const rec = (n, d=1,b=1) => {
+export const getNodesEdges = (tree: DTNode) => {
+  const nodes: TransformedNode = [];
+  const edges: TransformedEdge = [];
+  const rec = (n: DTNode, d: number = 1, b: number = 1) => {
     nodes.push({
       id: n.id,
       type: "custom",
@@ -88,7 +94,7 @@ export const getNodesEdges = (tree) => {
         label: n.name,
       },
     });
-    n.children.forEach((c,i) => {
+    n.children.forEach((c: DTNode, i: number) => {
       edges.push({
         id: `${n.id}${c.id}`,
         source: n.id,

@@ -32,8 +32,7 @@ export default function Home() {
     [setEdges]
   );
 
-  // TODO: file picker, pass file to parser
-  const parseDtb = async(data) => {
+  const parseDtb = async(data: Uint8Array) => {
     setInProgress(true);
     setTimeout(async () => {
       try {
