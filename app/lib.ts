@@ -84,7 +84,7 @@ const NODE_HEIGHT = 80;
 const weightedNode = (node: DTNode): DTNode => {
   if (node.children && node.children.length > 0) {
     let size = 0;
-    const cs = node.children.map((c) => {
+    const cs = node.children.map((c: DTNode) => {
       const wc = weightedNode(c);
       size += wc.size;
       return wc;
