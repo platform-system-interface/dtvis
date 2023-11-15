@@ -78,31 +78,50 @@ export const transform = (n: DTNode, id: string = "10000") => {
 type TransformedNode = any; // TODO
 type TransformedEdge = any; // TODO
 
+const NODE_WIDTH = 160;
+const NODE_HEIGHT = 80;
+
+const weightedNode = (node: DTNode): DTNode => {
+  if (node.children && node.children.length > 0) {
+    let size = 0;
+    const cs = node.children.map((c) => {
+      const wc = weightedNode(c);
+      size += wc.size;
+      return wc;
+    });
+    return { ...node, children: cs, size };
+  }
+  return { ...node, size: 1 };
+};
+
 // flatten tree to list of nodes, use IDs to define ReactFlow edges
 export const getNodesEdges = (tree: DTNode) => {
   const nodes: TransformedNode = [];
   const edges: TransformedEdge = [];
-  const rec = (n: DTNode, d: number = 1, b: number = 1) => {
+  const rec = (n: DTNode, d: number = 1, baseX: number = 0, baseY: number = 0) => {
     nodes.push({
       id: n.id,
       type: "custom",
       position: {
-        x: d*180,
-        y: b*(10-d)*12 + 50*n.children.length,
+        x: baseX + n.size * NODE_WIDTH / 2,
+        y: baseY + d * NODE_HEIGHT,
       },
       data: {
         label: n.name,
       },
     });
+    let offset = baseX;
     n.children.forEach((c: DTNode, i: number) => {
       edges.push({
         id: `${n.id}${c.id}`,
         source: n.id,
         target: c.id,
       });
-      rec(c, d+1, b+1+i);
+      rec(c, d+1, offset, baseY + n.children.length * 10);
+      offset += c.size * NODE_WIDTH;
     });
   };
-  rec(tree);
+  const t = weightedNode(tree);
+  rec(t);
   return { nodes, edges };
 };
