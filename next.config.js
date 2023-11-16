@@ -5,6 +5,9 @@ const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 module.exports = {
   output: "export",
   basePath: "/dtvis",
+  experimental: {
+    webpackBuildWorker: true,
+  },
   webpack: (
     config,
     { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
