@@ -11,7 +11,7 @@ import ReactFlow, {
 import { useFilePicker } from "use-file-picker";
 import { transform, getNodesEdges } from "./lib";
 import DTNode from "./DTNode";
-import styles from "./page.module.css"
+import "./page.module.css"
 
 const nodeTypes = {
   custom: DTNode
@@ -80,23 +80,64 @@ export default function Home() {
   const pending = loading || inProgress;
 
   return (
-    <main className={styles.main}>
-      <h1>Device Tree Visualizer</h1>
-      <div style={{ width: 300, display: "flex", justifyContent: "space-between" }}>
-        File: {fileName}
-        <button disabled={pending} onClick={openFilePicker}>
-          {pending ? "..." : "load DTB"}
-        </button>
-      </div>
-      <div>
-        nodes: {nodes.length}
-      </div>
-      <div style={{ width: "100vw", height: "90%" }}>
+    <div className="layout">
+      <header>
+        <Image
+          alt="Device Tree logo"
+          src="/dtvis/devicetree-logo.svg"
+          width={50}
+          height={50}
+          style={{ background: "#b0b0b0" }}
+        />
+        <h1>dtvis</h1>
+        <menu>
+          <button disabled={pending} onClick={openFilePicker}>
+            {pending ? "..." : "Load DTB"}
+          </button>
+        </menu>
+        {fileName && <span>File: {fileName}</span>}
+        {nodes.length > 0 && <span>Nodes: {nodes.length}</span>}
+      </header>
+      <main>
         <ReactFlow
           {...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect }}>
           <Controls />
         </ReactFlow>
-      </div>
-    </main>
+      </main>
+      <style jsx>{`
+        .layout {
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          min-height: 100vh;
+        }
+        header {
+          width: 100%;
+          height: 10vh;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 15px;
+          padding: 0 20px;
+        }
+        button {
+          background-color: #101212;
+          border-radius: 7px;
+          border-width: 3px;
+          padding: 5px 25px;
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          font-size: 22px;
+        }
+        main {
+          width: 100vw;
+          height: 90vh;
+        }
+      `}</style>
+    </div>
   )
 }
