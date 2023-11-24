@@ -1,6 +1,34 @@
-const fourU8ToU32 = (f: number[]) => (f[0] << 24) | (f[1] << 16) | (f[2] << 8) | f[3];
+type DTProp = any; // TODO
+// TODO
+type DTNode = any & {
+  name: string;
+  props: DTProp[];
+  children?: DTNode;
+  addr?: string;
+};
 
-const u8ArrToU32Arr = (u8a: number[]) => {
+// TODO: Differentiate?
+enum NodeType {
+  custom = "custom",
+}
+
+type TransformedNode = {
+  id: string;
+  type: NodeType;
+  position: {
+    x: number;
+    y: number;
+  };
+  data: {
+    label: string;
+  };
+};
+type TransformedEdge = any; // TODO
+
+const fourU8ToU32 = (f: number[]): number =>
+  (f[0] << 24) | (f[1] << 16) | (f[2] << 8) | f[3];
+
+const u8ArrToU32Arr = (u8a: number[]): number[] => {
     let res = [];
     for (let i = 0; i < u8a.length/4; i++) {
         const c = u8a.slice(i*4, (i+1)*4);
@@ -9,10 +37,7 @@ const u8ArrToU32Arr = (u8a: number[]) => {
     return res;
 };
 
-type DTNode = any; // TODO
-type DTProp = any; // TODO
-
-const u8ArrToStr = (u8a: number[]) => u8a.reduce((a,c,i) => {
+const u8ArrToStr = (u8a: number[]): string => u8a.reduce((a,c,i) => {
   if (i === u8a.length -1) {
     return a;
   }
@@ -21,7 +46,7 @@ const u8ArrToStr = (u8a: number[]) => u8a.reduce((a,c,i) => {
 }, "");
 
 // some props are simple strings
-const getStringProp = (n: DTNode, pname: string) => {
+const getStringProp = (n: DTNode, pname: string): string | undefined => {
   const p = n.props.find((p: DTProp) => p[0] === pname);
   if (p) {
     return u8ArrToStr(p[1]);
@@ -29,19 +54,19 @@ const getStringProp = (n: DTNode, pname: string) => {
 };
 
 // many props are just numbers
-const getProp = (n: DTNode, pname: string) => {
+const getProp = (n: DTNode, pname: string): number[] | null => {
   const p = n.props.find((p: DTProp) => p[0] === pname);
   return p ? u8ArrToU32Arr(p[1]) : null;
 };
 
 // strings representation of lists of numbers for pretty-printing
-const getPropStr = (n: DTNode, pname: string) => {
+const getPropStr = (n: DTNode, pname: string): string | null => {
   const p = getProp(n, pname);
   return p ? p.join(", ") : null;
 };
 
 // transform a node's props into numbers and strings, omitting many
-const transformNode = (n: DTNode) => {
+const transformNode = (n: DTNode): DTNode => {
   const name = n.name || "root";
   // phandle is an identifier to the node
   const phandle = getProp(n, "phandle");
@@ -75,9 +100,6 @@ export const transform = (n: DTNode, id: string = "10000") => {
   }
 };
 
-type TransformedNode = any; // TODO
-type TransformedEdge = any; // TODO
-
 const NODE_WIDTH = 160;
 const NODE_HEIGHT = 80;
 
@@ -94,20 +116,41 @@ const weightedNode = (node: DTNode): DTNode => {
   return { ...node, size: 1 };
 };
 
+/**
+ * Format to hex with leading 0x, padded with zeroes to groups of four digits.
+ * At least print 8 digits, but omit the first 4 of 12 if they are all 0.
+ */
+const transformAddr = (addr: string): string => {
+  if (addr === undefined) {
+    return "";
+  }
+  const padded = addr.padStart(12, "0");
+  const p1 = padded.substr(0, 4);
+  const p2 = padded.substr(4, 4);
+  const p3 = padded.substr(8, 4);
+  if (p1 === "0000") {
+    return `0x${p2}_${p3}`;
+  }
+  return `0x${p1}_${p2}_${p3}`;
+};
+
 // flatten tree to list of nodes, use IDs to define ReactFlow edges
 export const getNodesEdges = (tree: DTNode) => {
-  const nodes: TransformedNode = [];
-  const edges: TransformedEdge = [];
+  const nodes: TransformedNode[] = [];
+  const edges: TransformedEdge[] = [];
   const rec = (n: DTNode, d: number = 1, baseX: number = 0, baseY: number = 0) => {
+    const [name, addr] = n.name.split("@");
+    const baseAddr = transformAddr(addr);
+
     nodes.push({
       id: n.id,
-      type: "custom",
+      type: NodeType.custom,
       position: {
         x: baseX + n.size * NODE_WIDTH / 2,
         y: baseY + d * NODE_HEIGHT,
       },
       data: {
-        label: n.name,
+        label: `${name}\n${baseAddr}\n${n.size}`,
       },
     });
     let offset = baseX;
