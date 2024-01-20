@@ -9,10 +9,13 @@ import ReactFlow, {
   addEdge
 } from "reactflow";
 import { useFilePicker } from "use-file-picker";
-import styles from "./page.module.css"
-// TODO: wire up; this is a fixture
-import { nodes as iNodes, edges as iEdges } from "./nodes-edges.json";
 import { transform, getNodesEdges } from "./lib";
+import DTNode from "./DTNode";
+import styles from "./page.module.css"
+
+const nodeTypes = {
+  custom: DTNode
+};
 
 export default function Home() {
   const [fbuf, setFbuf] = useState<ArrayBuffer | null>(null);
@@ -90,7 +93,7 @@ export default function Home() {
       </div>
       <div style={{ width: "100vw", height: "90%" }}>
         <ReactFlow
-          {...{ nodes, edges, onNodesChange, onEdgesChange, onConnect }}>
+          {...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect }}>
           <Controls />
         </ReactFlow>
       </div>

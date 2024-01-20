@@ -5,10 +5,9 @@ const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 module.exports = {
   output: "export",
   basePath: "/dtvis",
-  // Because we get an error even though tsconfig has target ES6 configured:
-  // Type error: Type 'Uint8Array' can only be iterated through when using the
-  // '--downlevelIteration' flag or with a '--target' of 'es2015' or higher.
-  ignoreBuildErrors: true, // FIXME
+  experimental: {
+    webpackBuildWorker: true,
+  },
   webpack: (
     config,
     { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
