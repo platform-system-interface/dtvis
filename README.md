@@ -13,8 +13,6 @@ This application uses [device_tree-rs](https://github.com/platform-system-interf
 
 Install wasm-pack
 
-First, run the development server:
-
 ```bash
 cargo install wasm-pack
 npm install
