@@ -4,6 +4,11 @@ Device trees are used to describe a lot of hardware, especially in the embedded 
 
 This application uses [device_tree-rs](200~https://github.com/platform-system-interface/device_tree-rs) to parse .dtb files. You can find more informations about the fileformat there. Further informations can be found on [elinux](https://elinux.org/Device_Tree_Mysteries#kernel_usage) and in this [slides](https://metaspora.org/hack-the-gadget-mrmcd2023.pdf#Outline0.5) from a MRMCD Talk.
 
+## Screenshot
+
+![grafik](https://github.com/m0veax/dtvis/assets/2205193/f15c087a-81d9-4935-9126-4d788e68459b)
+
+
 ## Local Development
 
 Install wasm-pack
