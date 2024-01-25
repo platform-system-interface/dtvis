@@ -44,7 +44,7 @@ const DTNode = ({
           onMouseEnter={hoverOn}
           onMouseLeave={hoverOff}
         >
-          {data?.label} - <button onClick={() => collapseOn()} >{collapseText}</button>
+          {data?.label} <button onClick={() => collapseOn()} >{collapseText}</button>
         </div>
       <Handle
         type="source"

@@ -10,7 +10,6 @@ type DTNode = any & {
 // TODO: Differentiate?
 enum NodeType {
   custom = "custom",
-  hidden = "hidden"
 }
 
 type TransformedNode = {
