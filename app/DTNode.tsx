@@ -38,7 +38,7 @@ const DTNode = ({
           onMouseEnter={hoverOn}
           onMouseLeave={hoverOff}
         >
-          {data?.label}
+          {data?.label} - [-]
         </div>
       <Handle
         type="source"
