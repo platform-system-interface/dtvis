@@ -6,7 +6,7 @@ This application uses [device_tree-rs](https://github.com/platform-system-interf
 
 ## Screenshot
 
-![grafik](https://github.com/m0veax/dtvis/assets/2205193/f15c087a-81d9-4935-9126-4d788e68459b)
+![screenshot](assets/screenshot.png)
 
 
 ## Local Development
