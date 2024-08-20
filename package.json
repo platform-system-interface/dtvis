@@ -6,7 +6,9 @@
     "start": "next dev",
     "build": "next build",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint"
+    "lint": "next lint",
+    "storybook": "storybook dev -p 6006 --ci",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
@@ -25,6 +27,15 @@
     "use-file-picker": "^2.1.1"
   },
   "devDependencies": {
-    "@wasm-tool/wasm-pack-plugin": "^1.7.0"
+    "@storybook/addon-essentials": "^8.0.9",
+    "@storybook/addon-interactions": "^8.0.9",
+    "@storybook/addon-links": "^8.0.9",
+    "@storybook/blocks": "^8.0.9",
+    "@storybook/nextjs": "^8.0.9",
+    "@storybook/react": "^8.0.9",
+    "@storybook/test": "^8.0.9",
+    "@wasm-tool/wasm-pack-plugin": "^1.7.0",
+    "eslint-plugin-storybook": "^0.8.0",
+    "storybook": "^8.0.9"
   }
 }
