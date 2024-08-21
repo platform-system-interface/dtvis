@@ -23,6 +23,7 @@
     "react-redux": "^8.1.2",
     "reactflow": "^11.8.3",
     "redux": "^4.2.1",
+    "styled-jsx": "^5.1.6",
     "typescript": "5.2.2",
     "use-file-picker": "^2.1.1"
   },
