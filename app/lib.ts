@@ -21,6 +21,7 @@ type TransformedNode = {
   };
   data: {
     label: string;
+    status?: "okay" | "disabled";
   };
 };
 type TransformedEdge = any; // TODO
@@ -79,6 +80,7 @@ const transformNode = (n: DTNode): DTNode => {
   const clks = getProp(n, "clocks");
   const cnames = getStringProp(n, "clock-names");
   const compat = getStringProp(n, "compatible");
+  const status = getStringProp(n, "status");
   return {
     name,
     ...(phandle ? { phandle: phandle[0] } : null),
@@ -89,6 +91,7 @@ const transformNode = (n: DTNode): DTNode => {
     ...(clks ? { clks } : null),
     ...(cnames ? { cnames } : null),
     ...(compat ? { compat } : null),
+    ...(status ? { status } : null),
   };
 };
 
@@ -150,7 +153,11 @@ export const getNodesEdges = (tree: DTNode) => {
         y: baseY + d * NODE_HEIGHT,
       },
       data: {
-        label: `${name}\n${baseAddr}\n${n.size}`,
+        label: name,
+        baseAddr,
+        size: n.size,
+        compat: n.compat,
+        status: n.status,
       },
     });
     let offset = baseX;
