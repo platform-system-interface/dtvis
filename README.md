@@ -37,3 +37,7 @@ Open <http://localhost:3000/dtvis> in your browser to see the result.
 ## Contribute
 
 Feel free to contribute!
+
+## Legal
+
+For legal questions, see [LEGAL.md](LEGAL.md).
