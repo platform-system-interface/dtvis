@@ -4,6 +4,7 @@ import { Handle, type NodeProps, Position } from "reactflow";
 import { type DTStatus, type DTNodeData } from "./lib";
 import compatDb from "./compat-db.json";
 import type { DocsCategory } from "./compat-db.json";
+import genericNames from "./generic-names.json";
 
 const dotColors: Record<DTStatus, string> = {
   okay: "blue",
@@ -79,36 +80,63 @@ const Compat: FC<{ compat?: string }> = ({ compat }) => {
   );
 };
 
+export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
+  const { resets, clks, phandle, phySupply, phyHandle } = data;
+
+  const e = JSON.stringify(
+    { resets, clks, phandle, phySupply, phyHandle },
+    null,
+    2,
+  );
+
+  return <div>{e}</div>;
+};
+
 export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
   data,
   status,
 }) => {
-  if (!data) {
-    return null;
-  }
-
+  const extraClass = genericNames.includes(data.label) ? "generic" : "";
   return (
     <div className="node">
-      <span>{data.label}</span>
-      <span>{data.baseAddr}</span>
-      <Compat compat={data.compat} />
-      <Dot status={status} />
+      <header className={extraClass}>{data.label}</header>
+      <main>
+        <span>{data.model}</span>
+        <span>{data.baseAddr}</span>
+        <Compat compat={data.compat} />
+        <Dot status={status} />
+        <span>{data.extra}</span>
+        <Extra data={data} />
+      </main>
       <style>{`
         div.node {
           white-space: pre-wrap;
-          padding: 4px;
-          border: 2px solid #789789;
-          background: #0c0c0c;
-          color: #fff;
-          width: 150px;
-          font-size: 12px;
+          border: 4px solid #789789;
+          border-radius: 6px;
+          width: 250px;
+          font-size: 14px;
           font-family: "Fira Code";
-          display: flex;
-          flex-direction: column;
         }
         div.node:hover {
           border-color: #987987;
           border-style: dotted;
+        }
+        div.node header {
+          color: #0c0c0c;
+          background: #ccddcc;
+          font-weight: bold;
+          padding: 4px;
+        }
+        div.node header.generic {
+          color: #fff;
+          background: #850150;
+        }
+        div.node main {
+          color: #fff;
+          background: #0c0c0c;
+          padding: 4px;
+          display: flex;
+          flex-direction: column;
         }
       `}</style>
     </div>
