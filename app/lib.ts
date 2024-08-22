@@ -21,6 +21,7 @@ type TransformedNode = {
   };
   data: {
     label: string;
+    status?: "okay" | "disabled";
   };
 };
 type TransformedEdge = any; // TODO
@@ -65,6 +66,17 @@ const getPropStr = (n: DTNode, pname: string): string | null => {
   return p ? p.join(", ") : null;
 };
 
+const getExtra = (n: DTNode) => {
+  if (n.name === "aliases" | n.name === "chosen") {
+    const ps = n.props.map((p) => {
+      const [k, v] = p;
+      return `${k}=${u8ArrToStr(v)}`;
+    });
+    return ps.join("\n");
+  }
+  return null;
+};
+
 // transform a node's props into numbers and strings, omitting many
 const transformNode = (n: DTNode): DTNode => {
   const name = n.name || "root";
@@ -79,6 +91,9 @@ const transformNode = (n: DTNode): DTNode => {
   const clks = getProp(n, "clocks");
   const cnames = getStringProp(n, "clock-names");
   const compat = getStringProp(n, "compatible");
+  const status = getStringProp(n, "status");
+  const model = getStringProp(n, "model");
+  const extra = getExtra(n);
   return {
     name,
     ...(phandle ? { phandle: phandle[0] } : null),
@@ -89,6 +104,9 @@ const transformNode = (n: DTNode): DTNode => {
     ...(clks ? { clks } : null),
     ...(cnames ? { cnames } : null),
     ...(compat ? { compat } : null),
+    ...(status ? { status } : null),
+    ...(model ? { model } : null),
+    extra,
   };
 };
 
@@ -100,7 +118,7 @@ export const transform = (n: DTNode, id: string = "10000") => {
   }
 };
 
-const NODE_WIDTH = 160;
+const NODE_WIDTH = 260;
 const NODE_HEIGHT = 80;
 
 const weightedNode = (node: DTNode): DTNode => {
@@ -139,18 +157,21 @@ export const getNodesEdges = (tree: DTNode) => {
   const nodes: TransformedNode[] = [];
   const edges: TransformedEdge[] = [];
   const rec = (n: DTNode, d: number = 1, baseX: number = 0, baseY: number = 0) => {
-    const [name, addr] = n.name.split("@");
+    const { id, name, ...data } = n;
+    const [label, addr] = name.split("@");
     const baseAddr = transformAddr(addr);
 
     nodes.push({
-      id: n.id,
+      id,
       type: NodeType.custom,
       position: {
         x: baseX + n.size * NODE_WIDTH / 2,
         y: baseY + d * NODE_HEIGHT,
       },
       data: {
-        label: `${name}\n${baseAddr}\n${n.size}`,
+        label,
+        baseAddr,
+        ...data,
       },
     });
     let offset = baseX;

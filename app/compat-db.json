@@ -1,0 +1,50 @@
+{
+  "brcm,bcm2835-aux-clock": {
+    "category": "binding",
+    "path": "clock/brcm,bcm2835-aux-clock.txt"
+  },
+  "brcm,bcm2835-aux-uart": {
+    "category": "binding",
+    "path": "serial/brcm,bcm2835-aux-uart.txt"
+  },
+  "brcm,bcm2835-pwm": {
+    "category": "binding",
+    "path": "pwm/pwm-bcm2835.yaml"
+  },
+  "brcm,bcm2835-spi": {
+    "category": "binding",
+    "path": "spi/brcm,bcm2835-spi.txt"
+  },
+  "brcm,bcm2835-thermal": {
+    "category": "binding",
+    "path": "thermal/brcm,bcm2835-thermal.yaml"
+  },
+  "brcm,bcm2835-vchiq": {
+    "category": "binding",
+    "path": "soc/bcm/brcm,bcm2835-vchiq.yaml"
+  },
+  "arm,cortex-a7": {
+    "category": "binding",
+    "path": "arm/cpus.yaml"
+  },
+  "arm,cortex-a7-pmu": {
+    "category": "binding",
+    "path": "arm/pmu.yaml"
+  },
+  "brcm,bcm2835-cprman": {
+    "category": "binding",
+    "path": "clock/brcm,bcm2835-cprman.txt"
+  },
+  "raspberrypi,bcm2835-firmware": {
+    "category": "binding",
+    "path": "arm/bcm/raspberrypi,bcm2835-firmware.yaml"
+  },
+  "spidev": {
+    "category": "docs",
+    "path": "spi/spidev.html"
+  },
+  "brcm,bcm2835-audio": {
+    "category": "driver",
+    "path": "staging/vc04_services/bcm2835-audio/bcm2835.c"
+  }
+}
