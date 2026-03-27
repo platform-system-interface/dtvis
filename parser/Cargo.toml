@@ -19,15 +19,15 @@ default = ["console_error_panic_hook"]
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
 # code size when deploying.
 console_error_panic_hook = { version = "0.1.7", optional = true }
-device_tree = { git = "https://github.com/platform-system-interface/device_tree-rs", tag = "v2.1.0", package = "psi_device_tree" }
-gloo-utils = { version = "0.2.0", features = ["serde"] }
+device_tree = { path = "../../device_tree-rs", package = "psi_device_tree" }
+gloo-utils = { version = "0.3.0", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
-wasm-bindgen = "0.2"
-wasm-bindgen-futures = "0.4.37"
-js-sys = "0.3.64"
+wasm-bindgen = "0.2.88"
+wasm-bindgen-futures = "0.4.65"
+js-sys = "0.3.92"
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.34"
+wasm-bindgen-test = "0.3.65"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
