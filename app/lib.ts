@@ -94,27 +94,65 @@ const transformNode = (n: DTNode): DTNode => {
   // phy-handle is a ref to another node
   // TODO: make list of props that are refs
   const phyHandle = getProp(n, "phy-handle");
+  const pcsphyHandle = getProp(n, "pcsphy-handle");
   const phySupply = getProp(n, "phy-supply");
+  const mboxes = getProp(n, "mboxes");
   const resets = getProp(n, "resets");
   const dmas = getProp(n, "dmas");
-  const clks = getProp(n, "clocks");
+  const clocks = getProp(n, "clocks");
   const cnames = getStringProp(n, "clock-names");
   const compat = getStringProp(n, "compatible");
   const status = getStringProp(n, "status");
   const model = getStringProp(n, "model");
+
+  // Freescale SDK, _NOT_ mainline
+  const fmanMac = getProp(n, "fsl,fman-mac");
+
+  const fitStrings = [
+    "description",
+    "type",
+    "arch",
+    "os",
+    "kernel",
+    "compression",
+  ];
+  const fit = fitStrings.reduce((a, p) => {
+    const s = getStringProp(n, p);
+    if (s) {
+      a[p] = s;
+    }
+    return a;
+  }, {});
+  const fitVals = ["load", "entry"];
+  const fitV = fitVals.reduce((a, p) => {
+    const s = getProp(n, p);
+    if (s) {
+      // console.info({ [p]: s });
+      a[p] = padHexStr(s[0].toString(16));
+    }
+    return a;
+  }, {});
+
   const extra = getExtra(n);
+
   return {
     name,
     ...(phandle ? { phandle: phandle[0] } : null),
     ...(phySupply ? { phySupply: phySupply[0] } : null),
     ...(phyHandle ? { phyHandle: phyHandle[0] } : null),
+    ...(pcsphyHandle ? { pcsphyHandle: pcsphyHandle[0] } : null),
+    ...(fmanMac ? { fmanMac: fmanMac[0] } : null),
     ...(resets ? { resets } : null),
     ...(dmas ? { dmas } : null),
-    ...(clks ? { clks } : null),
+    ...(clocks ? { clocks } : null),
     ...(cnames ? { cnames } : null),
     ...(compat ? { compat } : null),
     ...(status ? { status } : null),
     ...(model ? { model } : null),
+    ...(mboxes ? { mboxes } : null),
+
+    ...fit,
+    ...fitV,
     extra,
   };
 };
@@ -150,11 +188,11 @@ const weightedNode = (node: DTNode): DTNode => {
  * Format to hex with leading 0x, padded with zeroes to groups of four digits.
  * At least print 8 digits, but omit the first 4 of 12 if they are all 0.
  */
-const transformAddr = (addr: string): string => {
-  if (addr === undefined) {
+const padHexStr = (val: string): string => {
+  if (val === undefined) {
     return "";
   }
-  const padded = addr.padStart(12, "0");
+  const padded = val.padStart(12, "0");
   const p1 = padded.substr(0, 4);
   const p2 = padded.substr(4, 4);
   const p3 = padded.substr(8, 4);
@@ -164,10 +202,77 @@ const transformAddr = (addr: string): string => {
   return `0x${p1}_${p2}_${p3}`;
 };
 
+// Get an edge from the given node by its ID to a referenced node if it exists
+// in the list of phandles, otherwise null. Prefix the edge ID.
+const getPhEdge = (phandles, ref, nodeId, prefix): TransformedEdge | null => {
+  const refId = phandles[ref];
+  return refId === undefined
+    ? null
+    : {
+        id: `${prefix}-${refId}_${nodeId}`,
+        source: nodeId,
+        target: refId,
+        animated: true,
+        label: prefix,
+      };
+};
+
+// Get edges for phandles.
+export const getPhEdges = (nodes: DTNode[], phandles): TransformedEdge[] => {
+  const edges = [];
+  nodes.forEach((n) => {
+    if (n.data.clocks) {
+      const ref = n.data.clocks[0];
+      const e = getPhEdge(phandles, ref, n.id, "clock");
+      if (e !== null) {
+        edges.push(e);
+      }
+    }
+    if (n.data.mboxes) {
+      const ref = n.data.mboxes[0];
+      const e = getPhEdge(phandles, ref, n.id, "mbox");
+      if (e !== null) {
+        edges.push(e);
+      }
+    }
+    if (n.data.resets) {
+      const ref = n.data.resets[0];
+      const e = getPhEdge(phandles, ref, n.id, "reset");
+      if (e !== null) {
+        edges.push(e);
+      }
+    }
+    if (n.data.phyHandle) {
+      const ref = n.data.phyHandle;
+      const e = getPhEdge(phandles, ref, n.id, "phy");
+      if (e !== null) {
+        edges.push(e);
+      }
+    }
+    if (n.data.pcsphyHandle) {
+      const ref = n.data.pcsphyHandle;
+      const e = getPhEdge(phandles, ref, n.id, "pcsphy");
+      if (e !== null) {
+        edges.push(e);
+      }
+    }
+    if (n.data.fmanMac) {
+      const ref = n.data.fmanMac;
+      const e = getPhEdge(phandles, ref, n.id, "fmanmac");
+      if (e !== null) {
+        edges.push(e);
+      }
+    }
+  });
+  return edges;
+};
+
 // flatten tree to list of nodes, use IDs to define ReactFlow edges
 export const getNodesEdges = (tree: DTNode) => {
   const nodes: TransformedNode[] = [];
   const edges: TransformedEdge[] = [];
+  // map phandle -> id
+  const phandles = {};
   const rec = (
     n: DTNode,
     d: number = 1,
@@ -176,7 +281,7 @@ export const getNodesEdges = (tree: DTNode) => {
   ) => {
     const { id, name, ...data } = n;
     const [label, addr] = name.split("@");
-    const baseAddr = transformAddr(addr);
+    const baseAddr = padHexStr(addr);
 
     nodes.push({
       id,
@@ -192,6 +297,12 @@ export const getNodesEdges = (tree: DTNode) => {
       },
     });
     let offset = baseX;
+
+    // TODO: store ID + #*-size
+    const phandle = data.phandle;
+    if (phandle != null) {
+      phandles[phandle] = id;
+    }
     n.children.forEach((c: DTNode, i: number) => {
       edges.push({
         id: `${n.id}${c.id}`,
@@ -204,5 +315,7 @@ export const getNodesEdges = (tree: DTNode) => {
   };
   const t = weightedNode(tree);
   rec(t);
-  return { nodes, edges };
+
+  const phEdges = getPhEdges(nodes, phandles);
+  return { nodes, edges: [...edges, ...phEdges] };
 };
