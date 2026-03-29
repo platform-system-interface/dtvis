@@ -81,15 +81,43 @@ const Compat: FC<{ compat?: string }> = ({ compat }) => {
 };
 
 export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
-  const { resets, clks, phandle, phySupply, phyHandle } = data;
+  const { resets, clocks, mboxes, phandle, phySupply, phyHandle } = data;
+  const { description, type, arch, os, kernel, compression, load, entry } =
+    data;
 
   const e = JSON.stringify(
-    { resets, clks, phandle, phySupply, phyHandle },
+    {
+      resets,
+      clocks,
+      mboxes,
+      phandle,
+      phySupply,
+      phyHandle,
+    },
+    null,
+    2,
+  );
+  const x = JSON.stringify(
+    {
+      description,
+      type,
+      arch,
+      os,
+      kernel,
+      compression,
+      load,
+      entry,
+    },
     null,
     2,
   );
 
-  return <div>{e}</div>;
+  return (
+    <div>
+      {e}
+      {x}
+    </div>
+  );
 };
 
 export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
