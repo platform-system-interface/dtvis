@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, FC } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import compatDb from "./compat-db.json";
 
