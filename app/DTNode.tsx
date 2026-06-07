@@ -8,12 +8,15 @@ type DTStatus = "okay" | "disabled";
 type DotColor = "blue" | "red";
 
 const getDotColor = (status?: DTStatus): DotColor | null => {
-  switch(status) {
-    case "okay": return "blue";
-    case "disabled": return "red";
-    default: return null;
+  switch (status) {
+    case "okay":
+      return "blue";
+    case "disabled":
+      return "red";
+    default:
+      return null;
   }
-}
+};
 
 export const Dot: FC<{ status?: DTStatus }> = ({ status }) => {
   if (!status) {
@@ -34,13 +37,16 @@ export const Dot: FC<{ status?: DTStatus }> = ({ status }) => {
   );
 };
 
-const docsbaseUrl = "https://docs.kernel.org"
-const dtBaseUrl = "https://www.kernel.org/doc/Documentation/devicetree/bindings";
+const docsbaseUrl = "https://docs.kernel.org";
+const dtBaseUrl =
+  "https://www.kernel.org/doc/Documentation/devicetree/bindings";
 
 const getBaseUrl = (category: DocsCategory): string => {
-  switch(category) {
-    case "binding": return dtBaseUrl;
-    case "docs": return docsbaseUrl;
+  switch (category) {
+    case "binding":
+      return dtBaseUrl;
+    case "docs":
+      return docsbaseUrl;
   }
 };
 
@@ -52,9 +58,9 @@ const getDocUrl = (compat: string) => {
   const d = compatDb[res];
   const baseUrl = getBaseUrl(d.category);
   return `${baseUrl}/${d.path}`;
-}
+};
 
-const Compat: FC<{ compat?: string; }> = ({ compat }) => {
+const Compat: FC<{ compat?: string }> = ({ compat }) => {
   if (!compat) {
     return null;
   }

@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { DataNode } from './DTNode';
+import type { Meta, StoryObj } from "@storybook/react";
+import { DataNode } from "./DTNode";
 
 const meta = {
-  title: 'App/DTNode',
+  title: "App/DTNode",
   component: DataNode,
   argTypes: {
     data: {
-      label: { control: 'text' },
+      label: { control: "text" },
       baseAddr: {},
       compat: {},
     },
-    status: { control: 'radio', options: ['okay', 'disabled'] },
+    status: { control: "radio", options: ["okay", "disabled"] },
   },
 } satisfies Meta<typeof DataNode>;
 
