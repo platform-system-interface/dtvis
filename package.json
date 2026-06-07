@@ -6,12 +6,14 @@
     "start": "next dev --webpack",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint --webpack",
+    "lint": "biome check",
+    "format": "biome format --write",
     "storybook": "storybook dev -p 6006 --ci",
     "build-storybook": "storybook build"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",
+    "biome": "^0.3.3",
     "next": "^16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -30,8 +32,6 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "19.2.3",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
-    "eslint": "10.1.0",
-    "eslint-plugin-storybook": "^10.3.3",
     "storybook": "^10.4.2",
     "typescript": "5.2.2"
   }
