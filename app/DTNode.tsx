@@ -1,6 +1,7 @@
 import { memo, useState, FC } from "react";
 import { Handle, NodeProps, Position } from "reactflow";
 import compatDb from "./compat-db.json";
+import type { DocsCategory } from "./compat-db.json";
 
 type DTStatus = "okay" | "disabled";
 
