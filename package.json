@@ -22,8 +22,7 @@
     "use-file-picker": "^2.1.4"
   },
   "devDependencies": {
-    "eslint": "10.1.0",
-    "eslint-config-next": "16.2.1",
+    "@next/eslint-plugin-next": "^16.2.7",
     "@storybook/addon-links": "^10.3.3",
     "@storybook/nextjs": "^10.3.3",
     "@storybook/react": "^10.3.3",
@@ -31,6 +30,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
+    "eslint": "10.1.0",
     "eslint-plugin-storybook": "^10.3.3",
     "storybook": "^10.3.3",
     "typescript": "5.2.2"
