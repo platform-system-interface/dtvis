@@ -36,13 +36,6 @@ export const Dot: FC<{ status?: DTStatus }> = ({ status }) => {
 const docsbaseUrl = "https://docs.kernel.org"
 const dtBaseUrl = "https://www.kernel.org/doc/Documentation/devicetree/bindings";
 
-type DocsCategory = "binding" | "docs";
-
-type DocsEntry = {
-  category: DocsCategory;
-  path: string;
-};
-
 const getBaseUrl = (category: DocsCategory): string => {
   switch(category) {
     case "binding": return dtBaseUrl;
