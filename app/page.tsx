@@ -20,6 +20,7 @@ const nodeTypes = {
 export default function Home() {
   const [fbuf, setFbuf] = useState<ArrayBuffer | null>(null);
   const [inProgress, setInProgress] = useState(false);
+  const [parser, setParser] = useState(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -39,8 +40,6 @@ export default function Home() {
     setInProgress(true);
     setTimeout(async () => {
       try {
-        // TODO: only do this once
-        const parser = await import("../parser/pkg");
         const res = await parser.parse_dtb([...data]);
         const tree = transform(res.root);
         const f = getNodesEdges(tree);
@@ -75,9 +74,17 @@ export default function Home() {
     }
   }, [filesContent]);
 
+  useEffect(() => {
+    import("../parser/pkg").then((p) => setParser(p));
+  }, []);
+
   const fileName = plainFiles.length > 0 ? plainFiles[0].name : "";
 
   const pending = loading || inProgress;
+
+  if (!parser) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="layout">

@@ -66,6 +66,17 @@ const getPropStr = (n: DTNode, pname: string): string | null => {
   return p ? p.join(", ") : null;
 };
 
+const getExtra = (n: DTNode) => {
+  if (n.name === "aliases" | n.name === "chosen") {
+    const ps = n.props.map((p) => {
+      const [k, v] = p;
+      return `${k}=${u8ArrToStr(v)}`;
+    });
+    return ps.join("\n");
+  }
+  return null;
+};
+
 // transform a node's props into numbers and strings, omitting many
 const transformNode = (n: DTNode): DTNode => {
   const name = n.name || "root";
@@ -75,12 +86,45 @@ const transformNode = (n: DTNode): DTNode => {
   // TODO: make list of props that are refs
   const phyHandle = getProp(n, "phy-handle");
   const phySupply = getProp(n, "phy-supply");
+  const mboxes = getProp(n, "mboxes");
   const resets = getProp(n, "resets");
   const dmas = getProp(n, "dmas");
-  const clks = getProp(n, "clocks");
+  const clocks = getProp(n, "clocks");
   const cnames = getStringProp(n, "clock-names");
   const compat = getStringProp(n, "compatible");
   const status = getStringProp(n, "status");
+  const model = getStringProp(n, "model");
+
+  const fitStrings = [
+    "description",
+    "type",
+    "arch",
+    "os",
+    "kernel",
+    "compression",
+  ];
+  const fit = fitStrings.reduce((a, p) => {
+    const s = getStringProp(n, p);
+    if (s) {
+      a[p] = s;
+    }
+    return a;
+  }, {});
+  const fitVals = [
+    "load",
+    "entry",
+  ];
+  const fitV = fitVals.reduce((a, p) => {
+    const s = getProp(n, p);
+    if (s) {
+      // console.info({ [p]: s });
+      a[p] = padHexStr(s[0].toString(16));
+    }
+    return a;
+  }, {});
+
+  const extra = getExtra(n);
+
   return {
     name,
     ...(phandle ? { phandle: phandle[0] } : null),
@@ -88,10 +132,16 @@ const transformNode = (n: DTNode): DTNode => {
     ...(phyHandle ? { phyHandle: phyHandle[0] } : null),
     ...(resets ? { resets } : null),
     ...(dmas ? { dmas } : null),
-    ...(clks ? { clks } : null),
+    ...(clocks ? { clocks } : null),
     ...(cnames ? { cnames } : null),
     ...(compat ? { compat } : null),
     ...(status ? { status } : null),
+    ...(model ? { model } : null),
+    ...(mboxes ? { mboxes } : null),
+
+    ...fit,
+    ...fitV,
+    extra,
   };
 };
 
@@ -103,8 +153,8 @@ export const transform = (n: DTNode, id: string = "10000") => {
   }
 };
 
-const NODE_WIDTH = 160;
-const NODE_HEIGHT = 80;
+const NODE_WIDTH = 320;
+const NODE_HEIGHT = 480;
 
 const weightedNode = (node: DTNode): DTNode => {
   if (node.children && node.children.length > 0) {
@@ -123,11 +173,11 @@ const weightedNode = (node: DTNode): DTNode => {
  * Format to hex with leading 0x, padded with zeroes to groups of four digits.
  * At least print 8 digits, but omit the first 4 of 12 if they are all 0.
  */
-const transformAddr = (addr: string): string => {
-  if (addr === undefined) {
+const padHexStr = (val: string): string => {
+  if (val === undefined) {
     return "";
   }
-  const padded = addr.padStart(12, "0");
+  const padded = val.padStart(12, "0");
   const p1 = padded.substr(0, 4);
   const p2 = padded.substr(4, 4);
   const p3 = padded.substr(8, 4);
@@ -141,26 +191,33 @@ const transformAddr = (addr: string): string => {
 export const getNodesEdges = (tree: DTNode) => {
   const nodes: TransformedNode[] = [];
   const edges: TransformedEdge[] = [];
+  // map phandle -> id
+  const phandles = {};
   const rec = (n: DTNode, d: number = 1, baseX: number = 0, baseY: number = 0) => {
-    const [name, addr] = n.name.split("@");
-    const baseAddr = transformAddr(addr);
+    const { id, name, ...data } = n;
+    const [label, addr] = name.split("@");
+    const baseAddr = padHexStr(addr);
 
     nodes.push({
-      id: n.id,
+      id,
       type: NodeType.custom,
       position: {
         x: baseX + n.size * NODE_WIDTH / 2,
         y: baseY + d * NODE_HEIGHT,
       },
       data: {
-        label: name,
+        label,
         baseAddr,
-        size: n.size,
-        compat: n.compat,
-        status: n.status,
+        ...data,
       },
     });
     let offset = baseX;
+
+    // TODO: store ID + #*-size
+    const phandle = data.phandle;
+    if (phandle != null) {
+      phandles[phandle] = id;
+    }
     n.children.forEach((c: DTNode, i: number) => {
       edges.push({
         id: `${n.id}${c.id}`,
@@ -173,5 +230,34 @@ export const getNodesEdges = (tree: DTNode) => {
   };
   const t = weightedNode(tree);
   rec(t);
+  console.info({ phandles });
+  nodes.forEach((n) => {
+    if (n.data.clocks) {
+      const ref = n.data.clocks[0];
+      const refId = phandles[ref];
+      if (refId !== undefined) {
+        const e = {
+          id: `clocks-${refId}_${n.id}`,
+          source: n.id,
+          target: refId,
+        };
+        console.info({ ...e });
+        edges.push(e);
+      }
+    }
+    if (n.data.mboxes) {
+      const ref = n.data.mboxes[0];
+      const refId = phandles[ref];
+      if (refId !== undefined) {
+        const e = {
+          id: `mboxes-${refId}_${n.id}`,
+          source: n.id,
+          target: refId,
+        };
+        console.info({ ...e });
+        edges.push(e);
+      }
+    }
+  });
   return { nodes, edges };
 };
