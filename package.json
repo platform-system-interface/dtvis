@@ -6,8 +6,9 @@
     "start": "next dev --webpack",
     "build": "next build --webpack",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check",
-    "format": "biome format --write",
+    "lint": "biome lint app/",
+    "format": "biome format --write app/",
+    "format:check": "biome check app/",
     "storybook": "storybook dev -p 6006 --ci",
     "build-storybook": "storybook build"
   },

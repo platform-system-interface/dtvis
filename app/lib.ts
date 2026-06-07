@@ -38,13 +38,14 @@ const u8ArrToU32Arr = (u8a: number[]): number[] => {
   return res;
 };
 
-const u8ArrToStr = (u8a: number[]): string => u8a.reduce((a,c,i) => {
-  if (i === u8a.length -1) {
-    return a;
-  }
-  const n = (c === 0) ? ";" : String.fromCharCode(c);
-  return `${a}${n}`;
-}, "");
+const u8ArrToStr = (u8a: number[]): string =>
+  u8a.reduce((a, c, i) => {
+    if (i === u8a.length - 1) {
+      return a;
+    }
+    const n = c === 0 ? ";" : String.fromCharCode(c);
+    return `${a}${n}`;
+  }, "");
 
 // some props are simple strings
 const getStringProp = (n: DTNode, pname: string): string | undefined => {
@@ -99,8 +100,10 @@ export const transform = (n: DTNode, id: string = "10000") => {
   return {
     ...transformNode(n),
     id,
-    children: n.children.map((c: DTNode, i: number) => transform(c, `${id}_${i}`)),
-  }
+    children: n.children.map((c: DTNode, i: number) =>
+      transform(c, `${id}_${i}`),
+    ),
+  };
 };
 
 const NODE_WIDTH = 160;
@@ -141,7 +144,12 @@ const transformAddr = (addr: string): string => {
 export const getNodesEdges = (tree: DTNode) => {
   const nodes: TransformedNode[] = [];
   const edges: TransformedEdge[] = [];
-  const rec = (n: DTNode, d: number = 1, baseX: number = 0, baseY: number = 0) => {
+  const rec = (
+    n: DTNode,
+    d: number = 1,
+    baseX: number = 0,
+    baseY: number = 0,
+  ) => {
     const [name, addr] = n.name.split("@");
     const baseAddr = transformAddr(addr);
 
@@ -149,7 +157,7 @@ export const getNodesEdges = (tree: DTNode) => {
       id: n.id,
       type: NodeType.custom,
       position: {
-        x: baseX + n.size * NODE_WIDTH / 2,
+        x: baseX + (n.size * NODE_WIDTH) / 2,
         y: baseY + d * NODE_HEIGHT,
       },
       data: {
@@ -167,7 +175,7 @@ export const getNodesEdges = (tree: DTNode) => {
         source: n.id,
         target: c.id,
       });
-      rec(c, d+1, offset, baseY + n.children.length * 10);
+      rec(c, d + 1, offset, baseY + n.children.length * 10);
       offset += c.size * NODE_WIDTH;
     });
   };

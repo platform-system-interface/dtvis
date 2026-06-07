@@ -1,20 +1,20 @@
 "use client";
-import Image from "next/image"
+import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   Controls,
   MiniMap,
-  addEdge
+  addEdge,
 } from "reactflow";
 import { useFilePicker } from "use-file-picker";
 import { transform, getNodesEdges } from "./lib";
 import DTNode from "./DTNode";
-import "./page.module.css"
+import "./page.module.css";
 
 const nodeTypes = {
-  custom: DTNode
+  custom: DTNode,
 };
 
 export default function Home() {
@@ -30,13 +30,13 @@ export default function Home() {
       readAs: "ArrayBuffer",
       maxFileSize: 1, // megabytes
     });
-  
+
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    [setEdges],
   );
 
-  const parseDtb = async(data: Uint8Array) => {
+  const parseDtb = async (data: Uint8Array) => {
     setInProgress(true);
     setTimeout(async () => {
       try {
@@ -56,7 +56,7 @@ export default function Home() {
   };
 
   /*
-  */
+   */
   // biome-ignore-start lint/correctness/useExhaustiveDependencies: no
   const reanalyze = useCallback(() => {
     if (fbuf) {
@@ -66,7 +66,7 @@ export default function Home() {
   // biome-ignore-end lint/correctness/useExhaustiveDependencies: no
 
   useEffect(() => {
-      reanalyze();
+    reanalyze();
   }, [reanalyze]);
 
   useEffect(() => {
@@ -109,7 +109,15 @@ export default function Home() {
       </header>
       <main>
         <ReactFlow
-          {...{ nodes, edges, nodeTypes, onNodesChange, onEdgesChange, onConnect }}>
+          {...{
+            nodes,
+            edges,
+            nodeTypes,
+            onNodesChange,
+            onEdgesChange,
+            onConnect,
+          }}
+        >
           <Controls />
         </ReactFlow>
       </main>
@@ -148,5 +156,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
