@@ -65,7 +65,7 @@ const Compat: FC<{ compat?: string; }> = ({ compat }) => {
   }
 
   return (
-    <a className="compat" href={docUrl} target="_blank">
+    <a className="compat" href={docUrl} target="_blank" rel="noopener">
       {compat}
       <style>{`
         a.compat {
