@@ -57,11 +57,13 @@ export default function Home() {
 
   /*
   */
+  // biome-ignore-start lint/correctness/useExhaustiveDependencies: no
   const reanalyze = useCallback(() => {
     if (fbuf) {
       parseDtb(new Uint8Array(fbuf));
     }
   }, [fbuf]);
+  // biome-ignore-end lint/correctness/useExhaustiveDependencies: no
 
   useEffect(() => {
       reanalyze();
