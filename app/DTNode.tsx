@@ -1,5 +1,5 @@
 import { memo, useState, FC } from "react";
-import { Handle, NodeProps, Position } from "reactflow";
+import { Handle, type NodeProps, Position } from "reactflow";
 import compatDb from "./compat-db.json";
 import type { DocsCategory } from "./compat-db.json";
 
@@ -113,12 +113,14 @@ export const DataNode: FC<{ data: object; status?: DTStatus }> = ({
   );
 };
 
+type DTNode = Node<{ status?: DTStatus }, "status">;
+
 const DTNode = ({
   data,
   isConnectable,
   targetPosition = Position.Top,
-  sourcePosition = Position.Bottom
-}: NodeProps) => {
+  sourcePosition = Position.Bottom,
+}: NodeProps<DTNode>) => {
   const { status, ...nData } = data;
   return (
     <>
