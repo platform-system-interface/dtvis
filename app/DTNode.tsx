@@ -37,7 +37,9 @@ export const Dot: FC<{ status?: DTStatus }> = ({ status }) => {
   );
 };
 
-const docsbaseUrl = "https://docs.kernel.org";
+const docsBaseUrl = "https://docs.kernel.org";
+const drvBaseUrl = "https://elixir.bootlin.com/linux/HEAD/source/drivers";
+//const drvBaseUrl = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers";
 const dtBaseUrl =
   "https://www.kernel.org/doc/Documentation/devicetree/bindings";
 
@@ -46,7 +48,10 @@ const getBaseUrl = (category: DocsCategory): string => {
     case "binding":
       return dtBaseUrl;
     case "docs":
-      return docsbaseUrl;
+      return docsBaseUrl;
+    case "driver":
+    default:
+      return drvBaseUrl;
   }
 };
 

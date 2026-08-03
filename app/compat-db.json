@@ -27,6 +27,10 @@
     "category": "binding",
     "path": "arm/cpus.yaml"
   },
+  "arm,cortex-a7-pmu": {
+    "category": "binding",
+    "path": "arm/pmu.yaml"
+  },
   "brcm,bcm2835-cprman": {
     "category": "binding",
     "path": "clock/brcm,bcm2835-cprman.txt"
@@ -38,5 +42,9 @@
   "spidev": {
     "category": "docs",
     "path": "spi/spidev.html"
+  },
+  "brcm,bcm2835-audio": {
+    "category": "driver",
+    "path": "staging/vc04_services/bcm2835-audio/bcm2835.c"
   }
 }
