@@ -1,4 +1,4 @@
-import { memo, useState, FC } from "react";
+import { memo, useState, type FC } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
 import compatDb from "./compat-db.json";
 import type { DocsCategory } from "./compat-db.json";
