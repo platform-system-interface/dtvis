@@ -30,12 +30,12 @@ const fourU8ToU32 = (f: number[]): number =>
   (f[0] << 24) | (f[1] << 16) | (f[2] << 8) | f[3];
 
 const u8ArrToU32Arr = (u8a: number[]): number[] => {
-    let res = [];
-    for (let i = 0; i < u8a.length/4; i++) {
-        const c = u8a.slice(i*4, (i+1)*4);
-        res.push(fourU8ToU32(c));
-    }
-    return res;
+  const res = [];
+  for (let i = 0; i < u8a.length / 4; i++) {
+    const c = u8a.slice(i * 4, (i + 1) * 4);
+    res.push(fourU8ToU32(c));
+  }
+  return res;
 };
 
 const u8ArrToStr = (u8a: number[]): string => u8a.reduce((a,c,i) => {
