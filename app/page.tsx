@@ -98,7 +98,7 @@ export default function Home() {
         />
         <h1>dtvis</h1>
         <menu>
-          <button disabled={pending} onClick={openFilePicker}>
+          <button type="button" disabled={pending} onClick={openFilePicker}>
             {pending ? "..." : "Load DTB"}
           </button>
         </menu>
