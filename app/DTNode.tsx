@@ -5,6 +5,15 @@ import type { DocsCategory } from "./compat-db.json";
 
 type DTStatus = "okay" | "disabled";
 
+type DTNodeData = {
+  baseAddr?: string;
+  compat?: string;
+  label?: string;
+  model?: string;
+  extra?: string;
+  status?: DTStatus;
+} & any;
+
 const dotColors: Record<DTStatus, string> = {
   okay: "blue",
   disabled: "red",
@@ -79,7 +88,7 @@ const Compat: FC<{ compat?: string }> = ({ compat }) => {
   );
 };
 
-export const DataNode: FC<{ data: object; status?: DTStatus }> = ({
+export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
   data,
   status,
 }) => {
@@ -115,15 +124,21 @@ export const DataNode: FC<{ data: object; status?: DTStatus }> = ({
   );
 };
 
-type DTNode = Node<{ status?: DTStatus }, "status">;
+// TODO: migrate to v12
+// type DTNode = Node<DTNodeData, "device-tree">;
+// TODO: `nodeTypes` <https://reactflow.dev/learn/customization/custom-nodes>
+// <https://reactflow.dev/examples/nodes/custom-node>
+// <https://reactflow.dev/learn/advanced-use/typescript#custom-nodes>
 
+// <https://v11.reactflow.dev/api-reference/types/node-props>
+// NOTE: This declares the properties of the `data` prop.
 const DTNode = ({
   data,
   isConnectable,
   targetPosition = Position.Top,
   sourcePosition = Position.Bottom,
-}: NodeProps<DTNode>) => {
-  const { status, ...nData } = data;
+}: NodeProps<DTNodeData>) => {
+  const { status } = data;
   return (
     <>
       <Handle
@@ -131,7 +146,7 @@ const DTNode = ({
         position={targetPosition}
         isConnectable={isConnectable}
       />
-      <DataNode data={nData} status={status} />
+      <DataNode data={data} status={status} />
       <Handle
         type="source"
         position={sourcePosition}
