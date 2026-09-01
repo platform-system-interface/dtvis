@@ -17,10 +17,16 @@ const nodeTypes = {
   custom: DTNode,
 };
 
+type ParseResult = {
+  root: any;
+};
+
+type ParseDtbFunction = (data: number[]) => Promise<ParseResult>;
+
 export default function Home() {
   const [fbuf, setFbuf] = useState<ArrayBuffer | null>(null);
   const [inProgress, setInProgress] = useState(false);
-  const [parser, setParser] = useState(null);
+  const [parser, setParser] = useState<{ parse_dtb: ParseDtbFunction } | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -37,6 +43,9 @@ export default function Home() {
   );
 
   const parseDtb = async (data: Uint8Array) => {
+    if (!parser) {
+      return;
+    }
     setInProgress(true);
     setTimeout(async () => {
       try {
