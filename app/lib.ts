@@ -1,3 +1,14 @@
+export type DTStatus = "okay" | "disabled";
+
+export type DTNodeData = {
+  label: string;
+  baseAddr?: string;
+  compat?: string;
+  model?: string;
+  extra?: string;
+  status?: DTStatus;
+} & any;
+
 type DTProp = any; // TODO
 // TODO
 type DTNode = any & {
@@ -19,10 +30,7 @@ type TransformedNode = {
     x: number;
     y: number;
   };
-  data: {
-    label: string;
-    status?: "okay" | "disabled";
-  };
+  data: DTNodeData;
 };
 type TransformedEdge = any; // TODO
 
