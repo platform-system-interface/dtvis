@@ -1,18 +1,9 @@
 import { memo, useState, type FC } from "react";
 import { Handle, type NodeProps, Position } from "reactflow";
+
+import { type DTStatus, type DTNodeData } from "./lib";
 import compatDb from "./compat-db.json";
 import type { DocsCategory } from "./compat-db.json";
-
-type DTStatus = "okay" | "disabled";
-
-type DTNodeData = {
-  baseAddr?: string;
-  compat?: string;
-  label?: string;
-  model?: string;
-  extra?: string;
-  status?: DTStatus;
-} & any;
 
 const dotColors: Record<DTStatus, string> = {
   okay: "blue",
