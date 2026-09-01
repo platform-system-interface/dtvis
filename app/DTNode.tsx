@@ -5,31 +5,22 @@ import type { DocsCategory } from "./compat-db.json";
 
 type DTStatus = "okay" | "disabled";
 
-type DotColor = "blue" | "red";
-
-const getDotColor = (status?: DTStatus): DotColor | null => {
-  switch (status) {
-    case "okay":
-      return "blue";
-    case "disabled":
-      return "red";
-    default:
-      return null;
-  }
+const dotColors: Record<DTStatus, string> = {
+  okay: "blue",
+  disabled: "red",
 };
 
 export const Dot: FC<{ status?: DTStatus }> = ({ status }) => {
   if (!status) {
     return null;
   }
-  const color = getDotColor(status);
+  const color = dotColors[status];
   return (
-    <div className="dot">
+    <div className="dot" style={{ background: color }}>
       <style>{`
         div.dot {
           width: 10px;
           height: 10px;
-          background: ${color};
           border-radius: 100%;
         }
       `}</style>
