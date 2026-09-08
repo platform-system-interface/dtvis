@@ -5,7 +5,6 @@ import type { Node, NodeProps } from "@xyflow/react";
 import { NODE_WIDTH } from "./lib";
 import type { DTStatus, DTNodeData } from "./lib";
 import compatDb from "./compat-db.json";
-import type { DocsCategory } from "./compat-db.json";
 import standardNames from "./generic-names.json";
 
 const dotColors: Record<DTStatus, string> = {
@@ -32,22 +31,12 @@ export const Dot: FC<{ status?: DTStatus }> = ({ status }) => {
 };
 
 const docsBaseUrl = "https://docs.kernel.org";
-const drvBaseUrl = "https://elixir.bootlin.com/linux/HEAD/source/drivers";
-//const drvBaseUrl = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers";
+//const drvBaseUrl = "https://elixir.bootlin.com/linux/HEAD/source/drivers";
+//const drvBaseUrl = "https://github.com/torvalds/linux/blob/HEAD/drivers";
+const drvBaseUrl =
+  "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers";
 const dtBaseUrl =
   "https://www.kernel.org/doc/Documentation/devicetree/bindings";
-
-const getBaseUrl = (category: DocsCategory): string => {
-  switch (category) {
-    case "binding":
-      return dtBaseUrl;
-    case "docs":
-      return docsBaseUrl;
-    case "driver":
-    default:
-      return drvBaseUrl;
-  }
-};
 
 const getDocUrl = (compat: string) => {
   const res = compat.split(";").find((c) => !!compatDb[c]);
@@ -55,8 +44,19 @@ const getDocUrl = (compat: string) => {
     return null;
   }
   const d = compatDb[res];
-  const baseUrl = getBaseUrl(d.category);
-  return `${baseUrl}/${d.path}`;
+  if (!d) {
+    return null;
+  }
+  if (d.binding) {
+    return `${dtBaseUrl}/${d.binding}`;
+  }
+  if (d.docs) {
+    return `${docsBaseUrl}/${d.docs}`;
+  }
+  if (d.driver) {
+    return `${drvBaseUrl}/${d.driver}`;
+  }
+  return null;
 };
 
 const Compat: FC<{ compat?: string }> = ({ compat }) => {
