@@ -34,5 +34,22 @@
   },
   "brcm,bcm2835-audio": {
     "driver": "staging/vc04_services/bcm2835-audio/bcm2835.c"
+  },
+  "fsl,lynx-pcs": {
+    "binding": "net/pcs/fsl,lynx-pcs.yaml"
+  },
+  "fsl,fman-memac": {
+    "driver": "net/ethernet/freescale/fman/mac.c"
+  },
+  "fsl,fman-memac-mdio": {
+    "driver": "net/ethernet/freescale/xgmac_mdio.c"
+  },
+  "fsl,fman-v3-port-rx": {
+    "binding": "net/fsl,fman-port.yaml",
+    "driver": "net/ethernet/freescale/fman/fman_port.c"
+  },
+  "fsl,fman-v3-port-tx": {
+    "binding": "net/fsl,fman-port.yaml",
+    "driver": "net/ethernet/freescale/fman/fman_port.c"
   }
 }
