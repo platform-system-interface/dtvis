@@ -1,18 +1,20 @@
 "use client";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import ReactFlow, {
-  useNodesState,
-  useEdgesState,
+import {
   Controls,
   MiniMap,
+  ReactFlow,
   addEdge,
-} from "reactflow";
+  useEdgesState,
+  useNodesState,
+} from "@xyflow/react";
 import { useFilePicker } from "use-file-picker";
 import { transform, getNodesEdges } from "./lib";
 import DTNode from "./DTNode";
 import "./page.module.css";
 
+// <https://reactflow.dev/learn/customization/custom-nodes>
 const nodeTypes = {
   custom: DTNode,
 };

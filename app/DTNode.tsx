@@ -1,7 +1,8 @@
 import { memo, useState, type FC } from "react";
-import { Handle, type NodeProps, Position } from "reactflow";
+import { Handle, Position } from "@xyflow/react";
+import type { Node, NodeProps } from "@xyflow/react";
 
-import { type DTStatus, type DTNodeData } from "./lib";
+import type { DTStatus, DTNodeData } from "./lib";
 import compatDb from "./compat-db.json";
 import type { DocsCategory } from "./compat-db.json";
 
@@ -115,20 +116,17 @@ export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
   );
 };
 
-// TODO: migrate to v12
-// type DTNode = Node<DTNodeData, "device-tree">;
-// TODO: `nodeTypes` <https://reactflow.dev/learn/customization/custom-nodes>
+// NOTE: This declares the properties of the `data` prop.
+type DTNode = Node<DTNodeData, "device-tree">;
+
 // <https://reactflow.dev/examples/nodes/custom-node>
 // <https://reactflow.dev/learn/advanced-use/typescript#custom-nodes>
-
-// <https://v11.reactflow.dev/api-reference/types/node-props>
-// NOTE: This declares the properties of the `data` prop.
 const DTNode = ({
   data,
   isConnectable,
   targetPosition = Position.Top,
   sourcePosition = Position.Bottom,
-}: NodeProps<DTNodeData>) => {
+}: NodeProps<DTNode>) => {
   const { status } = data;
   return (
     <>
