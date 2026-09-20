@@ -99,6 +99,10 @@ export default function Home() {
     return <div>Loading...</div>;
   }
 
+  const MiniMapNode = ({ x, y }) => (
+    <circle cx={x} cy={y} r={nodes.length * 5} fill="#ccddcc" />
+  );
+
   return (
     <div className="layout">
       <header>
@@ -130,6 +134,12 @@ export default function Home() {
           }}
         >
           <Controls />
+          <MiniMap
+            maskStrokeColor="#cdeeff"
+            maskStrokeWidth={10}
+            nodeComponent={MiniMapNode}
+            pannable
+          />
         </ReactFlow>
       </main>
       <style jsx>{`
