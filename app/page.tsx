@@ -46,6 +46,7 @@ export default function Home() {
       maxFileSize: 1, // megabytes
     });
 
+  // biome-ignore-start lint/correctness/useExhaustiveDependencies: no
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes],
@@ -58,6 +59,7 @@ export default function Home() {
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
   );
+  // biome-ignore-end lint/correctness/useExhaustiveDependencies: no
 
   const parseDtb = async (data: Uint8Array) => {
     if (!parser) {
