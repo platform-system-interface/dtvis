@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FC } from "react";
 import {
   Controls,
   MiniMap,
@@ -9,6 +9,7 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   type Edge,
+  type MiniMapNodeProps,
   type Node,
   type OnEdgesChange,
   type OnNodesChange,
@@ -113,7 +114,7 @@ export default function Home() {
     return <div>Loading...</div>;
   }
 
-  const MiniMapNode = ({ x, y }) => (
+  const MiniMapNode: FC<MiniMapNodeProps> = ({ x, y }) => (
     <circle cx={x} cy={y} r={nodes.length * 5} fill="#ccddcc" />
   );
 
