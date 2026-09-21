@@ -114,8 +114,9 @@ export const transform = (n: DTNode, id: string = "10000") => {
   };
 };
 
-const NODE_WIDTH = 160;
-const NODE_HEIGHT = 80;
+export const NODE_WIDTH = 250;
+const NODE_WIDTH_PADDED = NODE_WIDTH + 50;
+const NODE_HEIGHT = 350;
 
 const weightedNode = (node: DTNode): DTNode => {
   if (node.children && node.children.length > 0) {
@@ -166,7 +167,7 @@ export const getNodesEdges = (tree: DTNode) => {
       id,
       type: NodeType.custom,
       position: {
-        x: baseX + (n.size * NODE_WIDTH) / 2,
+        x: baseX + (n.size * NODE_WIDTH_PADDED) / 2,
         y: baseY + d * NODE_HEIGHT,
       },
       data: {
@@ -183,7 +184,7 @@ export const getNodesEdges = (tree: DTNode) => {
         target: c.id,
       });
       rec(c, d + 1, offset, baseY + n.children.length * 10);
-      offset += c.size * NODE_WIDTH;
+      offset += c.size * NODE_WIDTH_PADDED;
     });
   };
   const t = weightedNode(tree);
