@@ -75,6 +75,17 @@ const getPropStr = (n: DTNode, pname: string): string | null => {
   return p ? p.join(", ") : null;
 };
 
+const getExtra = (n: DTNode) => {
+  if (n.name === "aliases" || n.name === "chosen") {
+    const ps = n.props.map((p) => {
+      const [k, v] = p;
+      return `${k}=${u8ArrToStr(v)}`;
+    });
+    return ps.join("\n");
+  }
+  return null;
+};
+
 // transform a node's props into numbers and strings, omitting many
 const transformNode = (n: DTNode): DTNode => {
   const name = n.name || "root";
@@ -90,6 +101,8 @@ const transformNode = (n: DTNode): DTNode => {
   const cnames = getStringProp(n, "clock-names");
   const compat = getStringProp(n, "compatible");
   const status = getStringProp(n, "status");
+  const model = getStringProp(n, "model");
+  const extra = getExtra(n);
   return {
     name,
     ...(phandle ? { phandle: phandle[0] } : null),
@@ -101,6 +114,8 @@ const transformNode = (n: DTNode): DTNode => {
     ...(cnames ? { cnames } : null),
     ...(compat ? { compat } : null),
     ...(status ? { status } : null),
+    ...(model ? { model } : null),
+    extra,
   };
 };
 

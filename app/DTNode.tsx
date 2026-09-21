@@ -82,6 +82,18 @@ const Compat: FC<{ compat?: string }> = ({ compat }) => {
   );
 };
 
+export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
+  const { resets, clks, phandle, phySupply, phyHandle } = data;
+
+  const e = JSON.stringify(
+    { resets, clks, phandle, phySupply, phyHandle },
+    null,
+    2,
+  );
+
+  return <div>{e}</div>;
+};
+
 export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
   data,
   status,
@@ -95,6 +107,8 @@ export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
         <span>{data.baseAddr}</span>
         <Compat compat={data.compat} />
         <Dot status={status} />
+        <span>{data.extra}</span>
+        <Extra data={data} />
       </main>
       <style>{`
         div.node {
