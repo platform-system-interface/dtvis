@@ -158,22 +158,21 @@ export const getNodesEdges = (tree: DTNode) => {
     baseX: number = 0,
     baseY: number = 0,
   ) => {
-    const [name, addr] = n.name.split("@");
+    const { id, name, ...data } = n;
+    const [label, addr] = name.split("@");
     const baseAddr = transformAddr(addr);
 
     nodes.push({
-      id: n.id,
+      id,
       type: NodeType.custom,
       position: {
         x: baseX + (n.size * NODE_WIDTH) / 2,
         y: baseY + d * NODE_HEIGHT,
       },
       data: {
-        label: name,
+        label,
         baseAddr,
-        size: n.size,
-        compat: n.compat,
-        status: n.status,
+        ...data,
       },
     });
     let offset = baseX;
