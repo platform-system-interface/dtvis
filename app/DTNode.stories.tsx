@@ -10,7 +10,7 @@ const meta = {
       baseAddr: {},
       compat: {},
     },
-    status: { control: "radio", options: ["okay", "disabled"] },
+    status: { control: "radio", options: ["okay", "disabled", undefined] },
   },
 } satisfies Meta<typeof DataNode>;
 
@@ -22,6 +22,7 @@ export const Simple: Story = {
     data: {
       label: "UART",
       baseAddr: "0x0c00_0000",
+      compat: "ns16550a",
     },
     status: "okay",
   },
