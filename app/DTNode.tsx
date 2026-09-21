@@ -2,9 +2,11 @@ import { memo, useState, type FC } from "react";
 import { Handle, Position } from "@xyflow/react";
 import type { Node, NodeProps } from "@xyflow/react";
 
+import { NODE_WIDTH } from "./lib";
 import type { DTStatus, DTNodeData } from "./lib";
 import compatDb from "./compat-db.json";
 import type { DocsCategory } from "./compat-db.json";
+import standardNames from "./generic-names.json";
 
 const dotColors: Record<DTStatus, string> = {
   okay: "blue",
@@ -84,32 +86,45 @@ export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
   data,
   status,
 }) => {
-  if (!data) {
-    return null;
-  }
-
+  const extraClass = standardNames.includes(data.label) ? "highlight" : "";
   return (
     <div className="node">
-      <span>{data.label}</span>
-      <span>{data.baseAddr}</span>
-      <Compat compat={data.compat} />
-      <Dot status={status} />
+      <header className={extraClass}>{data.label}</header>
+      <main>
+        <span>{data.model}</span>
+        <span>{data.baseAddr}</span>
+        <Compat compat={data.compat} />
+        <Dot status={status} />
+      </main>
       <style>{`
         div.node {
           white-space: pre-wrap;
-          padding: 4px;
-          border: 2px solid #789789;
-          background: #0c0c0c;
-          color: #fff;
-          width: 150px;
-          font-size: 12px;
+          border: 4px solid #789789;
+          border-radius: 6px;
+          width: ${NODE_WIDTH}px;
+          font-size: 14px;
           font-family: "Fira Code";
-          display: flex;
-          flex-direction: column;
         }
         div.node:hover {
           border-color: #987987;
           border-style: dotted;
+        }
+        div.node header {
+          color: #0c0c0c;
+          background: #ccddcc;
+          font-weight: bold;
+          padding: 4px;
+        }
+        div.node header.highlight {
+          color: #fff;
+          background: #850150;
+        }
+        div.node main {
+          color: #fff;
+          background: #0c0c0c;
+          padding: 4px;
+          display: flex;
+          flex-direction: column;
         }
       `}</style>
     </div>
