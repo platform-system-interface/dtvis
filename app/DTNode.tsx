@@ -100,12 +100,18 @@ export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
     arch,
     os,
     kernel,
+    ramdisk,
+    loadables,
+    fdt,
     compression,
+    algo,
     load,
     entry,
   } = data;
+  let signer = data["signer-name"];
+  let key = data["key-name-hint"];
 
-  const e = JSON.stringify(
+  const extra = JSON.stringify(
     {
       resets,
       clocks,
@@ -119,14 +125,20 @@ export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
     null,
     2,
   );
-  const x = JSON.stringify(
+  const fit = JSON.stringify(
     {
       type,
       description,
       arch,
       os,
       kernel,
+      ramdisk,
+      loadables,
+      fdt,
       compression,
+      algo,
+      signer,
+      key,
       load,
       entry,
     },
@@ -136,8 +148,18 @@ export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
 
   return (
     <div>
-      {e}
-      {x}
+      <h5>extra</h5>
+      {extra}
+
+      <h5>FIT</h5>
+      {fit}
+      <style>{`
+        h5 {
+          display: flex;
+          justify-content: center;
+          font-weight: bold;
+        }
+      `}</style>
     </div>
   );
 };

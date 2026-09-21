@@ -114,7 +114,13 @@ const transformNode = (n: DTNode): DTNode => {
     "arch",
     "os",
     "kernel",
+    "ramdisk",
+    "loadables",
+    "fdt",
     "compression",
+    "algo",
+    "signer-name",
+    "key-name-hint",
   ];
   const fit = fitStrings.reduce((a, p) => {
     const s = getStringProp(n, p);
@@ -127,7 +133,6 @@ const transformNode = (n: DTNode): DTNode => {
   const fitV = fitVals.reduce((a, p) => {
     const s = getProp(n, p);
     if (s) {
-      // console.info({ [p]: s });
       a[p] = padHexStr(s[0].toString(16));
     }
     return a;
