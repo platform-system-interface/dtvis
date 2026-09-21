@@ -6,8 +6,12 @@ import {
   MiniMap,
   ReactFlow,
   addEdge,
-  useEdgesState,
-  useNodesState,
+  applyNodeChanges,
+  applyEdgeChanges,
+  type Edge,
+  type Node,
+  type OnEdgesChange,
+  type OnNodesChange,
 } from "@xyflow/react";
 import { useFilePicker } from "use-file-picker";
 import { transform, getNodesEdges } from "./lib";
@@ -28,9 +32,11 @@ type ParseDtbFunction = (data: number[]) => Promise<ParseResult>;
 export default function Home() {
   const [fbuf, setFbuf] = useState<ArrayBuffer | null>(null);
   const [inProgress, setInProgress] = useState(false);
-  const [parser, setParser] = useState<{ parse_dtb: ParseDtbFunction } | null>(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [parser, setParser] = useState<{ parse_dtb: ParseDtbFunction } | null>(
+    null,
+  );
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
 
   const { openFilePicker, filesContent, loading, errors, plainFiles } =
     useFilePicker({
@@ -39,6 +45,14 @@ export default function Home() {
       maxFileSize: 1, // megabytes
     });
 
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes],
+  );
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges],
+  );
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
