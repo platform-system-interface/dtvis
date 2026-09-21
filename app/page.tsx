@@ -124,6 +124,7 @@ export default function Home() {
       </header>
       <main>
         <ReactFlow
+          colorMode="system"
           {...{
             nodes,
             edges,
