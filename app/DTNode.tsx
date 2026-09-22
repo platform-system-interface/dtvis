@@ -24,6 +24,7 @@ export const Dot: FC<{ status?: DTStatus }> = ({ status }) => {
           width: 10px;
           height: 10px;
           border-radius: 100%;
+          border: 1px solid #eee;
         }
       `}</style>
     </div>
@@ -38,7 +39,10 @@ const drvBaseUrl =
 const dtBaseUrl =
   "https://www.kernel.org/doc/Documentation/devicetree/bindings";
 
-const getDocLinks = (compat: string): ReactNode[] | null => {
+const getDocLinks = (compat?: string): ReactNode[] | null => {
+  if (!compat) {
+    return null;
+  }
   const res = compat.split(";").find((c) => !!compatDb[c]);
   if (!res) {
     return null;
@@ -79,23 +83,11 @@ const Compat: FC<{ compat?: string }> = ({ compat }) => {
   if (!compat) {
     return null;
   }
-  const docLinks = getDocLinks(compat);
-
-  if (!docLinks) {
-    return compat;
-  }
 
   return (
-    <div>
+    <>
       {compat}
-      {docLinks}
-      <style>{`
-        a.compat {
-          color: #cdeeff;
-          text-decoration: underline;
-        }
-      `}</style>
-    </div>
+    </>
   );
 };
 
@@ -196,28 +188,58 @@ const PanToRef: FC<{ edge: RefEdge }> = ({ edge }) => {
   return <button onClick={() => panToRef(edge.source)}>{edge.label}</button>;
 };
 
-export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
-  data,
-  status,
-}) => {
-  const extraClass = standardNames.includes(data.label) ? "highlight" : "";
+export const DataNode: FC<{ data: DTNodeData }> = memo(({ data }) => {
+  const [showExtra, setShowExtra] = useState<boolean>(false);
 
-  const dump = () => {
-    console.info({ ...data });
-  };
+  const { label, model, baseAddr, compat, status, size, type, extra, refs, children: _, ...rest } = data;
+  const extraClass = standardNames.includes(label) ? "highlight" : "";
+  const toggle = () => setShowExtra((e) => !e);
+
+  const docLinks = getDocLinks(compat);
 
   return (
     <div className="node">
-      <header className={extraClass}>{data.label}</header>
+      <header className={extraClass}>
+        {label}
+        <div className="docs">
+          {docLinks}
+          <Dot status={status} />
+        </div>
+        <style>{`
+          a.compat {
+            text-decoration: none;
+            border: 1px solid #3434f4;
+            display: block;
+            width: 30px;
+            height: 22px;
+            padding: 1px;
+            font-size: 15px;
+            text-align: center;
+            background: #ffc;
+          }
+          div.docs {
+            margin: 2px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+          }
+        `}</style>
+      </header>
       <main>
-        <span>{data.model}</span>
-        <span>{data.baseAddr}</span>
-        <Compat compat={data.compat} />
-        <Dot status={status} />
-        <span>{data.extra}</span>
-        <Extra data={data} />
-        {data.refs.map((e) => <PanToRef edge={e} key={e.id} />)}
-        <button onClick={dump}>data?</button>
+        <span>{model}</span>
+        <span>{baseAddr}</span>
+        <Compat compat={compat} />
+        {size === undefined ? null : <span>size: {size}</span>}
+        {type === undefined ? null : <span>type: {type}</span>}
+        <button onClick={toggle}>show {showExtra ? "less 🔼" : "more 🔽"}</button>
+        {showExtra && (
+          <>
+            <span>{extra}</span>
+            <Extra data={data} />
+            <span>{JSON.stringify(rest, null, 2)}</span>
+          </>
+        )}
+        {refs.map((e) => <PanToRef edge={e} key={e.id} />)}
       </main>
       <style>{`
         div.node {
@@ -227,6 +249,7 @@ export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
           width: ${NODE_WIDTH}px;
           font-size: 14px;
           font-family: "Fira Code";
+          ${showExtra ? "z-index: 100;" : ""}
         }
         div.node:hover {
           border-color: #987987;
@@ -237,6 +260,9 @@ export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
           background: #ccddcc;
           font-weight: bold;
           padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
         div.node header.highlight {
           color: #fff;
@@ -252,7 +278,7 @@ export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
       `}</style>
     </div>
   );
-};
+});
 
 // NOTE: This declares the properties of the `data` prop.
 type DTNode = Node<DTNodeData, "device-tree">;
@@ -264,24 +290,21 @@ const DTNode = ({
   isConnectable,
   targetPosition = Position.Top,
   sourcePosition = Position.Bottom,
-}: NodeProps<DTNode>) => {
-  const { status } = data;
-  return (
-    <>
-      <Handle
-        type="target"
-        position={targetPosition}
-        isConnectable={isConnectable}
-      />
-      <DataNode data={data} status={status} />
-      <Handle
-        type="source"
-        position={sourcePosition}
-        isConnectable={isConnectable}
-      />
-    </>
-  );
-};
+}: NodeProps<DTNode>) => (
+  <>
+    <Handle
+      type="target"
+      position={targetPosition}
+      isConnectable={isConnectable}
+    />
+    <DataNode data={data} />
+    <Handle
+      type="source"
+      position={sourcePosition}
+      isConnectable={isConnectable}
+    />
+  </>
+);
 
 DTNode.displayName = "DTNode";
 
