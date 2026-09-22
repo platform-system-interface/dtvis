@@ -1,5 +1,5 @@
-import { memo, useState, type FC } from "react";
-import { Handle, Position } from "@xyflow/react";
+import { memo, useCallback, useState, type FC } from "react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
 import type { Node, NodeProps } from "@xyflow/react";
 
 import { NODE_WIDTH } from "./lib";
@@ -181,11 +181,31 @@ export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
   );
 };
 
+type RefEdge = {
+  source: string;
+  label: string;
+};
+
+const PanToRef: FC<{ edge: RefEdge }> = ({ edge }) => {
+  const { fitView } = useReactFlow();
+  const panToRef = useCallback(
+    (id: string) => fitView({ nodes: [{ id }] }),
+    [fitView],
+  );
+
+  return <button onClick={() => panToRef(edge.source)}>{edge.label}</button>;
+};
+
 export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
   data,
   status,
 }) => {
   const extraClass = standardNames.includes(data.label) ? "highlight" : "";
+
+  const dump = () => {
+    console.info({ ...data });
+  };
+
   return (
     <div className="node">
       <header className={extraClass}>{data.label}</header>
@@ -196,6 +216,8 @@ export const DataNode: FC<{ data: DTNodeData; status?: DTStatus }> = ({
         <Dot status={status} />
         <span>{data.extra}</span>
         <Extra data={data} />
+        {data.refs.map((e) => <PanToRef edge={e} key={e.id} />)}
+        <button onClick={dump}>data?</button>
       </main>
       <style>{`
         div.node {

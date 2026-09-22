@@ -38,8 +38,10 @@ export default function Home() {
   );
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [phEdges, setPhEdges] = useState<Edge[]>([]);
+  const [errors, setErrors] = useState<any[]>([]);
 
-  const { openFilePicker, filesContent, loading, errors, plainFiles } =
+  const { openFilePicker, filesContent, loading, errors: filePickErrors, plainFiles } =
     useFilePicker({
       multiple: false,
       readAs: "ArrayBuffer",
@@ -72,10 +74,11 @@ export default function Home() {
         const tree = transform(res.root);
         const f = getNodesEdges(tree);
         setNodes(f.nodes);
-        setEdges(f.edges);
+        setEdges([...f.edges, ...f.phEdges]);
+        setPhEdges(f.phEdges);
       } catch (e) {
         console.error(e);
-        // setError((errors || []).concat(e));
+        setErrors((filePickErrors || []).concat(e));
       } finally {
         console.info("DONE:", new Date());
         setInProgress(false);

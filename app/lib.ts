@@ -215,8 +215,8 @@ const getPhEdge = (phandles, ref, nodeId, prefix): TransformedEdge | null => {
     ? null
     : {
         id: `${prefix}-${refId}_${nodeId}`,
-        source: nodeId,
-        target: refId,
+        source: refId,
+        target: nodeId,
         animated: true,
         label: prefix,
       };
@@ -322,5 +322,17 @@ export const getNodesEdges = (tree: DTNode) => {
   rec(t);
 
   const phEdges = getPhEdges(nodes, phandles);
-  return { nodes, edges: [...edges, ...phEdges] };
+
+  const extNodes = nodes.map((n) => {
+    const refs = phEdges.filter((e) => e.target === n.id);
+    return {
+      ...n,
+      data: {
+        refs,
+        ...n.data,
+      },
+    };
+  });
+
+  return { nodes: extNodes, edges, phEdges };
 };
