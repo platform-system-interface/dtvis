@@ -38,7 +38,7 @@ const drvBaseUrl =
 const dtBaseUrl =
   "https://www.kernel.org/doc/Documentation/devicetree/bindings";
 
-const getDocUrl = (compat: string) => {
+const getDocLinks = (compat: string): ReactNode[] | null => {
   const res = compat.split(";").find((c) => !!compatDb[c]);
   if (!res) {
     return null;
@@ -47,38 +47,55 @@ const getDocUrl = (compat: string) => {
   if (!d) {
     return null;
   }
+  const links = [];
   if (d.binding) {
-    return `${dtBaseUrl}/${d.binding}`;
+    const url = `${dtBaseUrl}/${d.binding}`;
+    links.push(
+      <a className="compat" href={url} target="_blank" rel="noopener" key="b">
+        🪢
+      </a>
+    );
   }
   if (d.docs) {
-    return `${docsBaseUrl}/${d.docs}`;
+    const url = `${docsBaseUrl}/${d.docs}`;
+    links.push(
+      <a className="compat" href={url} target="_blank" rel="noopener" key="d">
+        📜
+      </a>
+    );
   }
   if (d.driver) {
-    return `${drvBaseUrl}/${d.driver}`;
+    const url = `${drvBaseUrl}/${d.driver}`;
+    links.push(
+      <a className="compat" href={url} target="_blank" rel="noopener" key="r">
+        🚗
+      </a>
+    );
   }
-  return null;
+  return links;
 };
 
 const Compat: FC<{ compat?: string }> = ({ compat }) => {
   if (!compat) {
     return null;
   }
-  const docUrl = getDocUrl(compat);
+  const docLinks = getDocLinks(compat);
 
-  if (!docUrl) {
+  if (!docLinks) {
     return compat;
   }
 
   return (
-    <a className="compat" href={docUrl} target="_blank" rel="noopener">
+    <div>
       {compat}
+      {docLinks}
       <style>{`
         a.compat {
           color: #cdeeff;
           text-decoration: underline;
         }
       `}</style>
-    </a>
+    </div>
   );
 };
 
