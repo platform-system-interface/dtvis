@@ -174,7 +174,7 @@ export const transform = (n: DTNode, id: string = "10000") => {
 
 export const NODE_WIDTH = 250;
 const NODE_WIDTH_PADDED = NODE_WIDTH + 50;
-const NODE_HEIGHT = 350;
+const NODE_HEIGHT = 200;
 
 const weightedNode = (node: DTNode): DTNode => {
   if (node.children && node.children.length > 0) {
