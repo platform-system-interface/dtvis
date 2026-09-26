@@ -209,16 +209,17 @@ const padHexStr = (val: string): string => {
 
 // Get an edge from the given node by its ID to a referenced node if it exists
 // in the list of phandles, otherwise null. Prefix the edge ID.
-const getPhEdge = (phandles, ref, nodeId, prefix): TransformedEdge | null => {
+const getPhEdge = (phandles, ref, node, prefix): TransformedEdge | null => {
   const refId = phandles[ref];
   return refId === undefined
     ? null
     : {
-        id: `${prefix}-${refId}_${nodeId}`,
+        id: `${prefix}-${refId}_${node.id}`,
         source: refId,
-        target: nodeId,
+        target: node.id,
         animated: true,
         label: prefix,
+        targetName: `${node.data.label}@${node.data.baseAddr}`,
       };
 };
 
@@ -228,42 +229,42 @@ export const getPhEdges = (nodes: DTNode[], phandles): TransformedEdge[] => {
   nodes.forEach((n) => {
     if (n.data.clocks) {
       const ref = n.data.clocks[0];
-      const e = getPhEdge(phandles, ref, n.id, "clock");
+      const e = getPhEdge(phandles, ref, n, "clock");
       if (e !== null) {
         edges.push(e);
       }
     }
     if (n.data.mboxes) {
       const ref = n.data.mboxes[0];
-      const e = getPhEdge(phandles, ref, n.id, "mbox");
+      const e = getPhEdge(phandles, ref, n, "mbox");
       if (e !== null) {
         edges.push(e);
       }
     }
     if (n.data.resets) {
       const ref = n.data.resets[0];
-      const e = getPhEdge(phandles, ref, n.id, "reset");
+      const e = getPhEdge(phandles, ref, n, "reset");
       if (e !== null) {
         edges.push(e);
       }
     }
     if (n.data.phyHandle) {
       const ref = n.data.phyHandle;
-      const e = getPhEdge(phandles, ref, n.id, "phy");
+      const e = getPhEdge(phandles, ref, n, "phy");
       if (e !== null) {
         edges.push(e);
       }
     }
     if (n.data.pcsphyHandle) {
       const ref = n.data.pcsphyHandle;
-      const e = getPhEdge(phandles, ref, n.id, "pcsphy");
+      const e = getPhEdge(phandles, ref, n, "pcsphy");
       if (e !== null) {
         edges.push(e);
       }
     }
     if (n.data.fmanMac) {
       const ref = n.data.fmanMac;
-      const e = getPhEdge(phandles, ref, n.id, "fmanmac");
+      const e = getPhEdge(phandles, ref, n, "fmanmac");
       if (e !== null) {
         edges.push(e);
       }
@@ -325,9 +326,11 @@ export const getNodesEdges = (tree: DTNode) => {
 
   const extNodes = nodes.map((n) => {
     const refs = phEdges.filter((e) => e.target === n.id);
+    const backRefs = phEdges.filter((e) => e.source === n.id);
     return {
       ...n,
       data: {
+        backRefs,
         refs,
         ...n.data,
       },

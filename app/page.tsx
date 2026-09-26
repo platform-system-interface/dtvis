@@ -41,12 +41,17 @@ export default function Home() {
   const [phEdges, setPhEdges] = useState<Edge[]>([]);
   const [errors, setErrors] = useState<any[]>([]);
 
-  const { openFilePicker, filesContent, loading, errors: filePickErrors, plainFiles } =
-    useFilePicker({
-      multiple: false,
-      readAs: "ArrayBuffer",
-      maxFileSize: 1, // megabytes
-    });
+  const {
+    openFilePicker,
+    filesContent,
+    loading,
+    errors: filePickErrors,
+    plainFiles,
+  } = useFilePicker({
+    multiple: false,
+    readAs: "ArrayBuffer",
+    maxFileSize: 1, // megabytes
+  });
 
   // biome-ignore-start lint/correctness/useExhaustiveDependencies: no
   const onNodesChange: OnNodesChange = useCallback(

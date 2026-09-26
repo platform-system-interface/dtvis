@@ -57,7 +57,7 @@ const getDocLinks = (compat?: string): ReactNode[] | null => {
     links.push(
       <a className="compat" href={url} target="_blank" rel="noopener" key="b">
         🪢
-      </a>
+      </a>,
     );
   }
   if (d.docs) {
@@ -65,7 +65,7 @@ const getDocLinks = (compat?: string): ReactNode[] | null => {
     links.push(
       <a className="compat" href={url} target="_blank" rel="noopener" key="d">
         📜
-      </a>
+      </a>,
     );
   }
   if (d.driver) {
@@ -73,7 +73,7 @@ const getDocLinks = (compat?: string): ReactNode[] | null => {
     links.push(
       <a className="compat" href={url} target="_blank" rel="noopener" key="r">
         🚗
-      </a>
+      </a>,
     );
   }
   return links;
@@ -84,11 +84,7 @@ const Compat: FC<{ compat?: string }> = ({ compat }) => {
     return null;
   }
 
-  return (
-    <>
-      {compat}
-    </>
-  );
+  return <>{compat}</>;
 };
 
 export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
@@ -174,14 +170,33 @@ export const Extra: FC<{ data: DTNodeData }> = ({ data }) => {
 };
 
 type RefEdge = {
-  source: string;
   label: string;
+  source: string;
+  target: string;
+  targetName: string;
 };
+
+const viewportDefaults = {
+  duration: 300,
+  maxZoom: 1.0,
+};
+
+const PanBack: FC<{ edge: RefEdge }> = memo(({ edge }) => {
+  const { fitView } = useReactFlow();
+  const panToRef = useCallback(
+    (id: string) => fitView({ nodes: [{ id }], ...viewportDefaults }),
+    [fitView],
+  );
+
+  return (
+    <button onClick={() => panToRef(edge.target)}>{edge.targetName}</button>
+  );
+});
 
 const PanToRef: FC<{ edge: RefEdge }> = ({ edge }) => {
   const { fitView } = useReactFlow();
   const panToRef = useCallback(
-    (id: string) => fitView({ nodes: [{ id }] }),
+    (id: string) => fitView({ nodes: [{ id }], ...viewportDefaults }),
     [fitView],
   );
 
@@ -191,7 +206,20 @@ const PanToRef: FC<{ edge: RefEdge }> = ({ edge }) => {
 export const DataNode: FC<{ data: DTNodeData }> = memo(({ data }) => {
   const [showExtra, setShowExtra] = useState<boolean>(false);
 
-  const { label, model, baseAddr, compat, status, size, type, extra, refs, children: _, ...rest } = data;
+  const {
+    label,
+    model,
+    baseAddr,
+    compat,
+    status,
+    size,
+    type,
+    extra,
+    refs,
+    backRefs,
+    children: _,
+    ...rest
+  } = data;
   const extraClass = standardNames.includes(label) ? "highlight" : "";
   const toggle = () => setShowExtra((e) => !e);
 
@@ -231,7 +259,9 @@ export const DataNode: FC<{ data: DTNodeData }> = memo(({ data }) => {
         <Compat compat={compat} />
         {size === undefined ? null : <span>size: {size}</span>}
         {type === undefined ? null : <span>type: {type}</span>}
-        <button onClick={toggle}>show {showExtra ? "less 🔼" : "more 🔽"}</button>
+        <button onClick={toggle}>
+          show {showExtra ? "less 🔼" : "more 🔽"}
+        </button>
         {showExtra && (
           <>
             <span>{extra}</span>
@@ -239,7 +269,12 @@ export const DataNode: FC<{ data: DTNodeData }> = memo(({ data }) => {
             <span>{JSON.stringify(rest, null, 2)}</span>
           </>
         )}
-        {refs.map((e) => <PanToRef edge={e} key={e.id} />)}
+        {refs.map((e) => (
+          <PanToRef edge={e} key={e.id} />
+        ))}
+        {backRefs.map((e) => (
+          <PanBack edge={e} key={e.id} />
+        ))}
       </main>
       <style>{`
         div.node {
