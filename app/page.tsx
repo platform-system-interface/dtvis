@@ -38,13 +38,20 @@ export default function Home() {
   );
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [phEdges, setPhEdges] = useState<Edge[]>([]);
+  const [errors, setErrors] = useState<any[]>([]);
 
-  const { openFilePicker, filesContent, loading, errors, plainFiles } =
-    useFilePicker({
-      multiple: false,
-      readAs: "ArrayBuffer",
-      maxFileSize: 1, // megabytes
-    });
+  const {
+    openFilePicker,
+    filesContent,
+    loading,
+    errors: filePickErrors,
+    plainFiles,
+  } = useFilePicker({
+    multiple: false,
+    readAs: "ArrayBuffer",
+    maxFileSize: 1, // megabytes
+  });
 
   // biome-ignore-start lint/correctness/useExhaustiveDependencies: no
   const onNodesChange: OnNodesChange = useCallback(
@@ -72,10 +79,11 @@ export default function Home() {
         const tree = transform(res.root);
         const f = getNodesEdges(tree);
         setNodes(f.nodes);
-        setEdges(f.edges);
+        setEdges([...f.edges, ...f.phEdges]);
+        setPhEdges(f.phEdges);
       } catch (e) {
         console.error(e);
-        // setError((errors || []).concat(e));
+        setErrors((filePickErrors || []).concat(e));
       } finally {
         console.info("DONE:", new Date());
         setInProgress(false);

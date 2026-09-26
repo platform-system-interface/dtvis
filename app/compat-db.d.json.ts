@@ -1,8 +1,7 @@
-export type DocsCategory = "binding" | "docs" | "driver";
-
 export type DocsEntry = {
-  category: DocsCategory;
-  path: string;
+  binding?: string;
+  docs?: string;
+  driver?: string;
 };
 
 declare const data: Record<string, DocsEntry>;
